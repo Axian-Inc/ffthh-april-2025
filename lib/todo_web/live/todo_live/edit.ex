@@ -2,6 +2,7 @@ defmodule TodoWeb.TodoLive.Edit do
   use TodoWeb, :live_view
 
   alias Todo.Tasks
+  alias Todo.Tasks.TodoItem
 
   @impl true
   def mount(_params, session, socket) do
@@ -40,45 +41,13 @@ defmodule TodoWeb.TodoLive.Edit do
   def handle_event("save", %{"todo_item" => todo_params}, socket) do
     case Tasks.update_todo_item(socket.assigns.todo_item, todo_params) do
       {:ok, updated_todo} ->
-        # Extract only the changed fields by comparing with original
-        original = socket.assigns.todo_item
-
-        # Create a delta map with only the changed attributes
-        delta = %{id: updated_todo.id}
-
-        # Only include fields that have changed
-        delta =
-          if original.title != updated_todo.title,
-            do: Map.put(delta, :title, updated_todo.title),
-            else: delta
-
-        delta =
-          if original.description != updated_todo.description,
-            do: Map.put(delta, :description, updated_todo.description),
-            else: delta
-
-        delta =
-          if original.due_date != updated_todo.due_date,
-            do: Map.put(delta, :due_date, updated_todo.due_date),
-            else: delta
-
-        delta =
-          if original.completed != updated_todo.completed,
-            do: Map.put(delta, :completed, updated_todo.completed),
-            else: delta
-
-        delta =
-          if original.completed_at != updated_todo.completed_at,
-            do: Map.put(delta, :completed_at, updated_todo.completed_at),
-            else: delta
-
-        # Broadcast only the delta of changed fields
+        # Broadcast the update to all clients
         Phoenix.PubSub.broadcast(
           Todo.PubSub,
           "todos:#{socket.assigns.current_user_id}",
-          {:todo_fields_updated, delta}
+          {:todo_updated, updated_todo}
         )
-
+        
         {:noreply,
          socket
          |> put_flash(:info, "Todo updated successfully")

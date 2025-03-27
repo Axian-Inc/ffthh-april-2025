@@ -8,7 +8,7 @@ defmodule TodoWeb.TodoLive.FormComponent do
     ~H"""
     <div>
       <.header>
-        {@title}
+        <%= @title %>
       </.header>
 
       <.simple_form
@@ -60,7 +60,7 @@ defmodule TodoWeb.TodoLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Todo updated successfully")
-         |> push_navigate(to: socket.assigns.navigate)}
+         |> push_redirect(to: socket.assigns.navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -70,13 +70,13 @@ defmodule TodoWeb.TodoLive.FormComponent do
   defp save_todo_item(socket, :new, todo_item_params) do
     # Add the current user's ID to the todo item params
     todo_item_params = Map.put(todo_item_params, "user_id", socket.assigns.current_user_id)
-
+    
     case Tasks.create_todo_item(todo_item_params) do
       {:ok, _todo_item} ->
         {:noreply,
          socket
          |> put_flash(:info, "Todo created successfully")
-         |> push_navigate(to: socket.assigns.navigate)}
+         |> push_redirect(to: socket.assigns.navigate)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

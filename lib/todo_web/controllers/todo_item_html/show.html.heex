@@ -5,7 +5,7 @@
     <%= if @todo_item.due_date, do: "· Due: #{Calendar.strftime(@todo_item.due_date, "%b %d, %Y")}" %>
   </:subtitle>
   <:actions>
-    <.link navigate={~p"/todos/#{@todo_item}/edit"}>
+    <.link href={~p"/todos/#{@todo_item}/edit"}>
       <.button>Edit</.button>
     </.link>
   </:actions>
@@ -41,19 +41,6 @@
       <%= Calendar.strftime(@todo_item.completed_at, "%B %d, %Y at %H:%M") %>
     </:item>
   </.list>
-
-  <div class="mt-6 flex justify-between">
-    <.back navigate={~p"/todos"}>Back to todos</.back>
-    <button 
-      phx-click="toggle_completed" 
-      phx-value-id={@todo_item.id}
-      class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-    >
-      <%= if @todo_item.completed do %>
-        Mark as Incomplete
-      <% else %>
-        Mark as Complete
-      <% end %>
-    </button>
-  </div>
 </div>
+
+<.back navigate={~p"/todos"}>Back to todos</.back>

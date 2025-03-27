@@ -8,57 +8,20 @@ defmodule Todo.TasksTest do
 
     import Todo.TasksFixtures
 
-    @invalid_attrs %{
-      description: nil,
-      title: nil,
-      due_date: nil,
-      completed: nil,
-      created_at: nil,
-      completed_at: nil
-    }
+    @invalid_attrs %{description: nil, title: nil, due_date: nil, completed: nil, created_at: nil, completed_at: nil}
 
-    test "list_todos/1 returns todos for a specific user" do
-      todo_item = todo_item_fixture()
-      assert Tasks.list_todos(todo_item.user_id) == [todo_item]
-      
-      # Empty list for other users
-      other_user = Todo.AccountsFixtures.user_fixture()
-      assert Tasks.list_todos(other_user.id) == []
-    end
-    
     test "list_todos/0 returns all todos" do
       todo_item = todo_item_fixture()
-      assert Enum.member?(Tasks.list_todos(), todo_item)
+      assert Tasks.list_todos() == [todo_item]
     end
 
-    test "get_todo_item!/2 returns the todo_item for a specific user" do
-      todo_item = todo_item_fixture()
-      assert Tasks.get_todo_item!(todo_item.user_id, todo_item.id) == todo_item
-      
-      # Raises for other users
-      other_user = Todo.AccountsFixtures.user_fixture()
-      assert_raise Ecto.NoResultsError, fn -> 
-        Tasks.get_todo_item!(other_user.id, todo_item.id) 
-      end
-    end
-    
     test "get_todo_item!/1 returns the todo_item with given id" do
       todo_item = todo_item_fixture()
       assert Tasks.get_todo_item!(todo_item.id) == todo_item
     end
 
     test "create_todo_item/1 with valid data creates a todo_item" do
-      user = Todo.AccountsFixtures.user_fixture()
-      
-      valid_attrs = %{
-        description: "some description",
-        title: "some title",
-        due_date: ~D[2025-03-26],
-        completed: true,
-        created_at: ~U[2025-03-26 20:18:00Z],
-        completed_at: ~U[2025-03-26 20:18:00Z],
-        user_id: user.id
-      }
+      valid_attrs = %{description: "some description", title: "some title", due_date: ~D[2025-03-26], completed: true, created_at: ~U[2025-03-26 20:18:00Z], completed_at: ~U[2025-03-26 20:18:00Z]}
 
       assert {:ok, %TodoItem{} = todo_item} = Tasks.create_todo_item(valid_attrs)
       assert todo_item.description == "some description"
@@ -66,9 +29,7 @@ defmodule Todo.TasksTest do
       assert todo_item.due_date == ~D[2025-03-26]
       assert todo_item.completed == true
       assert todo_item.created_at == ~U[2025-03-26 20:18:00Z]
-      # For completed todos, the completed_at timestamp is automatically set in the changeset
-      assert todo_item.completed_at != nil
-      assert todo_item.user_id == user.id
+      assert todo_item.completed_at == ~U[2025-03-26 20:18:00Z]
     end
 
     test "create_todo_item/1 with invalid data returns error changeset" do
@@ -77,15 +38,7 @@ defmodule Todo.TasksTest do
 
     test "update_todo_item/2 with valid data updates the todo_item" do
       todo_item = todo_item_fixture()
-
-      update_attrs = %{
-        description: "some updated description",
-        title: "some updated title",
-        due_date: ~D[2025-03-27],
-        completed: false,
-        created_at: ~U[2025-03-27 20:18:00Z],
-        completed_at: ~U[2025-03-27 20:18:00Z]
-      }
+      update_attrs = %{description: "some updated description", title: "some updated title", due_date: ~D[2025-03-27], completed: false, created_at: ~U[2025-03-27 20:18:00Z], completed_at: ~U[2025-03-27 20:18:00Z]}
 
       assert {:ok, %TodoItem{} = todo_item} = Tasks.update_todo_item(todo_item, update_attrs)
       assert todo_item.description == "some updated description"

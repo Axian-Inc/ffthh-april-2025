@@ -10,8 +10,8 @@ defmodule TodoWeb.TodoLive.New do
 
     if current_user_id do
       changeset = Tasks.change_todo_item(%TodoItem{})
-
-      {:ok,
+      
+      {:ok, 
        socket
        |> assign(:current_user_id, current_user_id)
        |> assign(:todo_item, %TodoItem{})
@@ -36,27 +36,16 @@ defmodule TodoWeb.TodoLive.New do
   def handle_event("save", %{"todo_item" => todo_params}, socket) do
     # Add user_id to params
     todo_params = Map.put(todo_params, "user_id", socket.assigns.current_user_id)
-
+    
     case Tasks.create_todo_item(todo_params) do
       {:ok, todo} ->
-        # Only send the necessary fields for a new todo creation
-        # This avoids sending internal fields and empty values
-        todo_data = %{
-          id: todo.id,
-          title: todo.title,
-          description: todo.description,
-          due_date: todo.due_date,
-          completed: todo.completed,
-          created_at: todo.created_at
-        }
-
-        # Broadcast just the creation event with minimal data
+        # Broadcast the new todo to all clients
         Phoenix.PubSub.broadcast(
           Todo.PubSub,
           "todos:#{socket.assigns.current_user_id}",
-          {:todo_created, todo_data}
+          {:todo_created, todo}
         )
-
+        
         {:noreply,
          socket
          |> put_flash(:info, "Todo created successfully")

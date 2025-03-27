@@ -4,7 +4,12 @@
 </.header>
 
 <div class="mt-8">
-  <.simple_form for={@changeset} id="todo-form" phx-change="validate" phx-submit="save">
+  <.simple_form
+    for={@changeset}
+    id="todo-form"
+    phx-change="validate"
+    phx-submit="save"
+  >
     <.input field={@changeset[:title]} type="text" label="Title" required />
     <.input field={@changeset[:description]} type="textarea" label="Description" />
     <.input field={@changeset[:due_date]} type="date" label="Due date" />
