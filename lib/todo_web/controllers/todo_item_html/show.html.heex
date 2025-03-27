@@ -1,0 +1,46 @@
+<.header>
+  <h1 class="text-lg font-semibold"><%= @todo_item.title %></h1>
+  <:subtitle>
+    <%= if @todo_item.completed, do: "✅ Completed", else: "⏳ In Progress" %>
+    <%= if @todo_item.due_date, do: "· Due: #{Calendar.strftime(@todo_item.due_date, "%b %d, %Y")}" %>
+  </:subtitle>
+  <:actions>
+    <.link href={~p"/todos/#{@todo_item}/edit"}>
+      <.button>Edit</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="mt-8 bg-white p-6 rounded-lg shadow">
+  <%= if @todo_item.description do %>
+    <div class="mb-6">
+      <h2 class="text-sm font-medium text-gray-500 mb-2">Description</h2>
+      <div class="text-gray-700 whitespace-pre-line"><%= @todo_item.description %></div>
+    </div>
+  <% end %>
+
+  <.list>
+    <:item :if={@todo_item.due_date} title="Due date">
+      <%= Calendar.strftime(@todo_item.due_date, "%B %d, %Y") %>
+    </:item>
+    <:item title="Status">
+      <%= if @todo_item.completed do %>
+        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+          Completed
+        </span>
+      <% else %>
+        <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+          In Progress
+        </span>
+      <% end %>
+    </:item>
+    <:item title="Created">
+      <%= Calendar.strftime(@todo_item.created_at, "%B %d, %Y at %H:%M") %>
+    </:item>
+    <:item :if={@todo_item.completed_at} title="Completed at">
+      <%= Calendar.strftime(@todo_item.completed_at, "%B %d, %Y at %H:%M") %>
+    </:item>
+  </.list>
+</div>
+
+<.back navigate={~p"/todos"}>Back to todos</.back>

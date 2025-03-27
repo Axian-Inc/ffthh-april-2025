@@ -1,0 +1,12 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:title]} type="text" label="Title" required />
+  <.input field={f[:description]} type="textarea" label="Description" />
+  <.input field={f[:due_date]} type="date" label="Due date" />
+  <.input field={f[:completed]} type="checkbox" label="Completed" />
+  <:actions>
+    <.button>Save Todo item</.button>
+  </:actions>
+</.simple_form>

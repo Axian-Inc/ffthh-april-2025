@@ -1,0 +1,15 @@
+FROM postgres:16
+
+# Environment variables for database setup
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_DB=todo_dev
+
+# Default port exposure
+EXPOSE 5432
+
+# Initialize database with custom configuration if needed
+# COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# Health check to verify database is running
+HEALTHCHECK --interval=5s --timeout=5s --retries=3 CMD pg_isready -U postgres || exit 1
