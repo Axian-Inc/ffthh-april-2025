@@ -22,9 +22,38 @@ defmodule TodoWeb.TodoLive.Show do
   
   @impl true
   def handle_info({:todo_updated, todo_item}, socket) do
-    # If we're viewing this todo, update it
+    # Legacy handler for full todo updates
     if socket.assigns.todo_item && socket.assigns.todo_item.id == todo_item.id do
       {:noreply, assign(socket, todo_item: todo_item)}
+    else
+      {:noreply, socket}
+    end
+  end
+  
+  @impl true
+  def handle_info({:todo_completion_toggled, delta}, socket) do
+    # Update only the completion status if we're viewing this todo
+    if socket.assigns.todo_item && socket.assigns.todo_item.id == delta.id do
+      updated_todo = %{socket.assigns.todo_item | 
+        completed: delta.completed, 
+        completed_at: delta.completed_at
+      }
+      {:noreply, assign(socket, todo_item: updated_todo)}
+    else
+      {:noreply, socket}
+    end
+  end
+  
+  @impl true
+  def handle_info({:todo_fields_updated, delta}, socket) do
+    # Apply only the changed fields if we're viewing this todo
+    if socket.assigns.todo_item && socket.assigns.todo_item.id == delta.id do
+      # Apply each field in the delta to the todo
+      updated_todo = Enum.reduce(Map.drop(delta, [:id]), socket.assigns.todo_item, fn {field, value}, acc ->
+        Map.put(acc, field, value)
+      end)
+      
+      {:noreply, assign(socket, todo_item: updated_todo)}
     else
       {:noreply, socket}
     end
@@ -57,20 +86,24 @@ defmodule TodoWeb.TodoLive.Show do
     # Toggle the completed status
     new_status = !todo_item.completed
     
-    # Update the completed_at timestamp if being marked as completed
-    attrs = if new_status do
-      %{completed: true, completed_at: DateTime.truncate(DateTime.utc_now(), :second)}
-    else
-      %{completed: false, completed_at: nil}
-    end
+    # Create completed_at timestamp if being marked as completed
+    completed_at = if new_status, do: DateTime.truncate(DateTime.utc_now(), :second), else: nil
+    attrs = %{completed: new_status, completed_at: completed_at}
     
     {:ok, updated_todo} = Tasks.update_todo_item(todo_item, attrs)
     
-    # Broadcast the update to all clients
+    # Create a minimal delta with only changed fields
+    delta = %{
+      id: todo_item.id,
+      completed: new_status,
+      completed_at: completed_at
+    }
+    
+    # Broadcast specific event type with minimal data
     Phoenix.PubSub.broadcast(
       Todo.PubSub,
       "todos:#{socket.assigns.current_user_id}",
-      {:todo_updated, updated_todo}
+      {:todo_completion_toggled, delta}
     )
 
     {:noreply, assign(socket, :todo_item, updated_todo)}
