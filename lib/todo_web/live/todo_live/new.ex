@@ -39,11 +39,22 @@ defmodule TodoWeb.TodoLive.New do
     
     case Tasks.create_todo_item(todo_params) do
       {:ok, todo} ->
-        # Broadcast the new todo to all clients
+        # Only send the necessary fields for a new todo creation
+        # This avoids sending internal fields and empty values
+        todo_data = %{
+          id: todo.id,
+          title: todo.title,
+          description: todo.description,
+          due_date: todo.due_date,
+          completed: todo.completed,
+          created_at: todo.created_at
+        }
+        
+        # Broadcast just the creation event with minimal data
         Phoenix.PubSub.broadcast(
           Todo.PubSub,
           "todos:#{socket.assigns.current_user_id}",
-          {:todo_created, todo}
+          {:todo_created, todo_data}
         )
         
         {:noreply,
