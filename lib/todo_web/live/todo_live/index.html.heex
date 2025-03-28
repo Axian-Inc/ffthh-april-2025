@@ -2,7 +2,12 @@
   <h1 class="text-2xl font-bold">My Todo List</h1>
   <:actions>
     <.link navigate={~p"/todos/new"}>
-      <.button>Add New Todo</.button>
+      <.button class="flex items-center gap-2 bg-green-600 hover:bg-green-700">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        New Task
+      </.button>
     </.link>
   </:actions>
 </.header>
@@ -12,14 +17,25 @@
     <div class="flex flex-col items-center justify-center py-12 bg-white rounded-lg shadow text-center">
       <div class="text-gray-500 mb-4">
         <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          >
+          </path>
         </svg>
       </div>
       <h3 class="text-lg font-medium text-gray-900">No todos yet</h3>
       <p class="mt-1 text-sm text-gray-500">Get started by creating your first todo item.</p>
       <div class="mt-6">
         <.link navigate={~p"/todos/new"}>
-          <.button>Create Todo</.button>
+          <.button class="flex items-center gap-2 bg-green-600 hover:bg-green-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Task
+          </.button>
         </.link>
       </div>
     </div>
@@ -28,10 +44,19 @@
       <table class="min-w-full divide-y divide-gray-300">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="w-10 text-center py-3.5">Done</th>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Todo</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Due Date</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+            <th scope="col" class="w-10 text-center py-3.5 text-sm font-semibold text-gray-900"></th>
+            <th
+              scope="col"
+              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+            >
+              Todo
+            </th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Due Date
+            </th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Status
+            </th>
             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
               <span class="sr-only">Actions</span>
             </th>
@@ -42,31 +67,40 @@
             <tr class="hover:bg-gray-50">
               <td class="text-center py-4">
                 <div class="flex items-center justify-center">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     phx-click="toggle_completed"
                     phx-value-id={todo_item.id}
                     class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer"
                     checked={todo_item.completed}
-                  >
+                  />
                 </div>
               </td>
-              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 cursor-pointer" phx-click={JS.navigate(~p"/todos/#{todo_item}")}>
+              <td
+                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 cursor-pointer"
+                phx-click={JS.navigate(~p"/todos/#{todo_item}")}
+              >
                 <div class={"font-medium text-gray-900 #{if todo_item.completed, do: "line-through text-gray-500"}"}>
-                  <%= todo_item.title %>
+                  {todo_item.title}
                 </div>
                 <%= if todo_item.description do %>
-                  <div class="text-gray-500 truncate max-w-xs"><%= todo_item.description %></div>
+                  <div class="text-gray-500 truncate max-w-xs">{todo_item.description}</div>
                 <% end %>
               </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 cursor-pointer" phx-click={JS.navigate(~p"/todos/#{todo_item}")}>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 cursor-pointer"
+                phx-click={JS.navigate(~p"/todos/#{todo_item}")}
+              >
                 <%= if todo_item.due_date do %>
-                  <%= Calendar.strftime(todo_item.due_date, "%b %d, %Y") %>
+                  {Calendar.strftime(todo_item.due_date, "%b %d, %Y")}
                 <% else %>
                   <span class="text-gray-400">No due date</span>
                 <% end %>
               </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm cursor-pointer" phx-click={JS.navigate(~p"/todos/#{todo_item}")}>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm cursor-pointer"
+                phx-click={JS.navigate(~p"/todos/#{todo_item}")}
+              >
                 <%= if todo_item.completed do %>
                   <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                     Completed
@@ -79,12 +113,15 @@
               </td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                 <div class="flex space-x-3 justify-end">
-                  <.link navigate={~p"/todos/#{todo_item}/edit"} class="text-indigo-600 hover:text-indigo-900">
+                  <.link
+                    navigate={~p"/todos/#{todo_item}/edit"}
+                    class="text-indigo-600 hover:text-indigo-900"
+                  >
                     Edit
                   </.link>
-                  <.link 
-                    phx-click="delete" 
-                    phx-value-id={todo_item.id} 
+                  <.link
+                    phx-click="delete"
+                    phx-value-id={todo_item.id}
                     data-confirm="Are you sure you want to delete this todo?"
                     class="text-red-600 hover:text-red-900 cursor-pointer"
                   >

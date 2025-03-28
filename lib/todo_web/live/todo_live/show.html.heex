@@ -1,12 +1,17 @@
 <.header>
-  <h1 class="text-lg font-semibold"><%= @todo_item.title %></h1>
+  <h1 class="text-lg font-semibold">{@todo_item.title}</h1>
   <:subtitle>
-    <%= if @todo_item.completed, do: "✅ Completed", else: "⏳ In Progress" %>
-    <%= if @todo_item.due_date, do: "· Due: #{Calendar.strftime(@todo_item.due_date, "%b %d, %Y")}" %>
+    {if @todo_item.completed, do: "✅ Completed", else: "⏳ In Progress"}
+    {if @todo_item.due_date, do: "· Due: #{Calendar.strftime(@todo_item.due_date, "%b %d, %Y")}"}
   </:subtitle>
   <:actions>
     <.link navigate={~p"/todos/#{@todo_item}/edit"}>
-      <.button>Edit</.button>
+      <.button class="px-3 py-1 h-9 text-sm flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        Edit
+      </.button>
     </.link>
   </:actions>
 </.header>
@@ -15,13 +20,13 @@
   <%= if @todo_item.description do %>
     <div class="mb-6">
       <h2 class="text-sm font-medium text-gray-500 mb-2">Description</h2>
-      <div class="text-gray-700 whitespace-pre-line"><%= @todo_item.description %></div>
+      <div class="text-gray-700 whitespace-pre-line">{@todo_item.description}</div>
     </div>
   <% end %>
 
   <.list>
     <:item :if={@todo_item.due_date} title="Due date">
-      <%= Calendar.strftime(@todo_item.due_date, "%B %d, %Y") %>
+      {Calendar.strftime(@todo_item.due_date, "%B %d, %Y")}
     </:item>
     <:item title="Status">
       <%= if @todo_item.completed do %>
@@ -35,19 +40,26 @@
       <% end %>
     </:item>
     <:item title="Created">
-      <%= Calendar.strftime(@todo_item.created_at, "%B %d, %Y at %H:%M") %>
+      {Calendar.strftime(@todo_item.created_at, "%B %d, %Y at %H:%M")}
     </:item>
     <:item :if={@todo_item.completed_at} title="Completed at">
-      <%= Calendar.strftime(@todo_item.completed_at, "%B %d, %Y at %H:%M") %>
+      {Calendar.strftime(@todo_item.completed_at, "%B %d, %Y at %H:%M")}
     </:item>
   </.list>
 
   <div class="mt-6 flex justify-between">
     <.back navigate={~p"/todos"}>Back to todos</.back>
-    <button 
-      phx-click="toggle_completed" 
+    <button
+      phx-click="toggle_completed"
       phx-value-id={@todo_item.id}
-      class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      class={[
+        "inline-flex items-center justify-center rounded-md px-3 py-1 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 h-9",
+        if @todo_item.completed do
+          "bg-red-300 hover:bg-red-400 focus-visible:outline-red-300"
+        else
+          "bg-green-600 hover:bg-green-700 focus-visible:outline-green-600"
+        end
+      ]}
     >
       <%= if @todo_item.completed do %>
         Mark as Incomplete

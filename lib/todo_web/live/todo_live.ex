@@ -10,7 +10,9 @@ defmodule TodoWeb.TodoLive do
 
     if current_user_id do
       todos = Tasks.list_todos(current_user_id)
-      {:ok, assign(socket, todos: todos, current_user_id: current_user_id, page_title: "Todo List")}
+
+      {:ok,
+       assign(socket, todos: todos, current_user_id: current_user_id, page_title: "Todo List")}
     else
       {:ok, redirect(socket, to: ~p"/users/log_in")}
     end
@@ -35,7 +37,7 @@ defmodule TodoWeb.TodoLive do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     todo_item = Tasks.get_todo_item!(socket.assigns.current_user_id, id)
-    
+
     socket
     |> assign(:page_title, "Edit Todo")
     |> assign(:todo_item, todo_item)
@@ -43,7 +45,7 @@ defmodule TodoWeb.TodoLive do
 
   defp apply_action(socket, :show, %{"id" => id}) do
     todo_item = Tasks.get_todo_item!(socket.assigns.current_user_id, id)
-    
+
     socket
     |> assign(:page_title, todo_item.title)
     |> assign(:todo_item, todo_item)
@@ -60,17 +62,18 @@ defmodule TodoWeb.TodoLive do
   @impl true
   def handle_event("toggle_completed", %{"id" => id}, socket) do
     todo_item = Tasks.get_todo_item!(socket.assigns.current_user_id, id)
-    
+
     # Toggle the completed status
     new_status = !todo_item.completed
-    
+
     # Update the completed_at timestamp if being marked as completed
-    attrs = if new_status do
-      %{completed: true, completed_at: DateTime.truncate(DateTime.utc_now(), :second)}
-    else
-      %{completed: false, completed_at: nil}
-    end
-    
+    attrs =
+      if new_status do
+        %{completed: true, completed_at: DateTime.truncate(DateTime.utc_now(), :second)}
+      else
+        %{completed: false, completed_at: nil}
+      end
+
     {:ok, _todo_item} = Tasks.update_todo_item(todo_item, attrs)
 
     # Refresh todos list
