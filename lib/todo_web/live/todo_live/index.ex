@@ -6,17 +6,26 @@ defmodule TodoWeb.TodoLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
+    IO.puts("\n[Mount] 🚀 Index LiveView mounting")
     current_user_id = get_user_id_from_session(session)
 
     if current_user_id do
       # Subscribe to the user's todos topic for real-time updates
       if connected?(socket) do
+        IO.puts("[Mount] 🔌 Socket connected, subscribing to todos:#{current_user_id}")
         Phoenix.PubSub.subscribe(Todo.PubSub, "todos:#{current_user_id}")
+        IO.puts("        📡 Subscription active - this view will receive broadcasts")
+      else
+        IO.puts("[Mount] 🔄 Static render phase (JS not yet connected)")
       end
 
+      IO.puts("[Mount] 📥 Loading initial todos from database")
       todos = Tasks.list_todos(current_user_id)
+      IO.puts("        ✅ Found #{length(todos)} todos, initializing LiveView state")
+      
       {:ok, assign(socket, todos: todos, current_user_id: current_user_id)}
     else
+      IO.puts("[Mount] 🚫 User not authenticated, redirecting to login")
       {:ok, redirect(socket, to: ~p"/users/log_in")}
     end
   end
@@ -34,7 +43,12 @@ defmodule TodoWeb.TodoLive.Index do
 
   @impl true
   def handle_info({:todo_completion_toggled, delta}, socket) do
+    # [6] Log the received broadcast in Index LiveView
+    IO.puts("\n[6] 📻 Index LiveView received broadcast: {:todo_completion_toggled}")
+    IO.puts("    📦 Delta: %{id: #{delta.id}, completed: #{delta.completed}}")
+    
     # Update only the completion status of the todo
+    IO.puts("[7] 🧩 Applying changes to Index LiveView state")
     updated_todos =
       Enum.map(socket.assigns.todos, fn todo ->
         if todo.id == delta.id do
@@ -44,6 +58,7 @@ defmodule TodoWeb.TodoLive.Index do
         end
       end)
 
+    IO.puts("    ✨ Triggering re-render of Index LiveView with updated state")
     {:noreply, assign(socket, todos: updated_todos)}
   end
 
@@ -124,7 +139,12 @@ defmodule TodoWeb.TodoLive.Index do
 
   @impl true
   def handle_event("toggle_completed", %{"id" => id}, socket) do
+    # [1] Log when the event is received
+    IO.puts("\n[1] 📩 Event received: toggle_completed for todo ##{id}")
+    
     todo_item = Tasks.get_todo_item!(socket.assigns.current_user_id, id)
+    # [2] Log the current state
+    IO.puts("[2] 🔄 Toggling todo: '#{todo_item.title}' from #{todo_item.completed} to #{!todo_item.completed}")
 
     # Toggle the completed status
     new_status = !todo_item.completed
@@ -133,7 +153,10 @@ defmodule TodoWeb.TodoLive.Index do
     completed_at = if new_status, do: DateTime.truncate(DateTime.utc_now(), :second), else: nil
     attrs = %{completed: new_status, completed_at: completed_at}
 
+    # [3] Log the database update
+    IO.puts("[3] 💾 Updating database...")
     {:ok, updated_todo} = Tasks.update_todo_item(todo_item, attrs)
+    IO.puts("    ✅ Database updated successfully")
 
     # Create a minimal delta with only changed fields
     delta = %{
@@ -142,19 +165,24 @@ defmodule TodoWeb.TodoLive.Index do
       completed_at: completed_at
     }
 
-    # Broadcast specific event type with minimal data
+    # [4] Log the broadcast
+    IO.puts("[4] 📡 Broadcasting to todos:#{socket.assigns.current_user_id}")
     Phoenix.PubSub.broadcast(
       Todo.PubSub,
       "todos:#{socket.assigns.current_user_id}",
       {:todo_completion_toggled, delta}
     )
+    IO.puts("    📣 Message sent: {:todo_completion_toggled, delta}")
 
+    # [5] Log the local state update
+    IO.puts("[5] 🔄 Updating local state for current socket")
     # Update the todo in-memory instead of re-fetching from database
     updated_todos =
       Enum.map(socket.assigns.todos, fn todo ->
         if todo.id == todo_item.id, do: updated_todo, else: todo
       end)
 
+    IO.puts("    ✅ Local state updated, initiating re-render")
     {:noreply, assign(socket, :todos, updated_todos)}
   end
 
