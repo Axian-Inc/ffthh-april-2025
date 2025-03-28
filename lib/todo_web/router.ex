@@ -66,7 +66,7 @@ defmodule TodoWeb.Router do
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
-    
+
     # LiveView routes
     live "/todos", TodoLive.Index, :index
     live "/todos/new", TodoLive.New, :new

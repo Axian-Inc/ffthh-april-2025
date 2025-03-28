@@ -1,8 +1,0 @@
-<.header>
-  Edit Todo item {@todo_item.id}
-  <:subtitle>Use this form to manage todo_item records in your database.</:subtitle>
-</.header>
-
-<.todo_item_form changeset={@changeset} action={~p"/todos/#{@todo_item}"} />
-
-<.back navigate={~p"/todos"}>Back to todos</.back>

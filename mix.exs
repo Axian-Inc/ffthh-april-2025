@@ -59,7 +59,8 @@ defmodule Todo.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:bcrypt_elixir, "~> 3.0"},
-      {:observer_cli, "~> 1.7"} # Command-line alternative to Observer
+      # Command-line alternative to Observer
+      {:observer_cli, "~> 1.7"}
     ]
   end
 

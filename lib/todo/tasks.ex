@@ -21,7 +21,7 @@ defmodule Todo.Tasks do
     from(t in TodoItem, where: t.user_id == ^user_id)
     |> Repo.all()
   end
-  
+
   @doc """
   Returns the list of all todos - use with caution.
   """
@@ -47,7 +47,7 @@ defmodule Todo.Tasks do
     from(t in TodoItem, where: t.id == ^id and t.user_id == ^user_id)
     |> Repo.one!()
   end
-  
+
   @doc """
   Gets a single todo_item without user validation.
   Use with caution.

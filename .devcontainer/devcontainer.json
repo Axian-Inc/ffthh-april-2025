@@ -1,0 +1,23 @@
+{
+  "name": "Phoenix LiveView Dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "mix setup",
+  "forwardPorts": [
+    4000
+  ],
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "jakebecker.elixir-ls",
+        "ms-azuretools.vscode-docker",
+        "phoenixframework.phoenix",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
+}
