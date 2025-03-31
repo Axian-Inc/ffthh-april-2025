@@ -1,0 +1,18 @@
+<.header>
+  Edit Todo "{@todo_item.title}"
+  <:subtitle>Update your todo item</:subtitle>
+</.header>
+
+<div class="mt-8">
+  <.simple_form for={@changeset} id="todo-form" phx-change="validate" phx-submit="save">
+    <.input field={@changeset[:title]} type="text" label="Title" required />
+    <.input field={@changeset[:description]} type="textarea" label="Description" />
+    <.input field={@changeset[:due_date]} type="date" label="Due date" />
+    <.input field={@changeset[:completed]} type="checkbox" label="Completed" />
+    <:actions>
+      <.button phx-disable-with="Saving...">Save Todo</.button>
+    </:actions>
+  </.simple_form>
+</div>
+
+<.back navigate={~p"/todos"}>Back to todos</.back>
