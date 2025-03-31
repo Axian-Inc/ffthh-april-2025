@@ -1,6 +1,6 @@
 # Todo Application
 
-A simple Todo application built with Elixir and Phoenix Framework. This application allows users to manage their tasks with features like authentication, task creation, due dates, and task completion tracking.
+A simple Todo application built with Elixir and Phoenix Framework.
 
 ## Features
 
@@ -115,7 +115,7 @@ sudo usermod -aG docker $USER
 docker-compose up -d
 ```
 
-2. Setup the application:
+2. Setup and run the application:
 
 ```bash
 # Get dependencies
@@ -152,7 +152,3 @@ The application uses optimized PubSub patterns:
 - Delta updates (only changed fields are sent)
 - Event-specific broadcasts
 - In-memory updates to avoid redundant database queries
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
