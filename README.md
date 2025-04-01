@@ -54,7 +54,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 ```
 
 2. Install Elixir and Erlang:
-Note: You'll need to update your PATH after the `elixer` install.
+Note: You'll need to update your PATH after the `elixir` install.
 
 ```powershell
 choco install elixir
