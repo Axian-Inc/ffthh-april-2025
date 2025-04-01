@@ -54,12 +54,13 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 ```
 
 2. Install Elixir and Erlang:
+Note: You'll need to update your PATH after the `elixer` install.
 
 ```powershell
 choco install elixir
 ```
 
-3. Install Docker Desktop:
+3. Install Docker Desktop (optional, if not already installed):
 
 ```powershell
 choco install docker-desktop
