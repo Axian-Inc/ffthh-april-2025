@@ -44,6 +44,7 @@ brew install --cask docker
 4. Start Docker Desktop application from Applications folder
 
 ### Windows
+You have two options for running under Windows. Running the application on Windows OR install Windows Subsystem for Linux, and a Linux image to run the application.
 
 1. Install Chocolatey (Windows package manager):
    - Open PowerShell as Administrator and run:
