@@ -17,9 +17,16 @@ defmodule Todo.Tasks do
       [%TodoItem{}, ...]
 
   """
-  def list_todos(user_id) do
-    from(t in TodoItem, where: t.user_id == ^user_id)
-    |> Repo.all()
+  def list_todos(user_id, priority \\ nil) do
+    query = from(t in TodoItem, where: t.user_id == ^user_id)
+    
+    query = if priority && priority in TodoItem.priorities() do
+      from(q in query, where: q.priority == ^priority)
+    else
+      query
+    end
+    
+    Repo.all(query)
   end
 
   @doc """

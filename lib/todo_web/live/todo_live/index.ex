@@ -5,7 +5,7 @@ defmodule TodoWeb.TodoLive.Index do
   alias Todo.Tasks.TodoItem
 
   @impl true
-  def mount(_params, session, socket) do
+  def mount(params, session, socket) do
     IO.puts("\n[Mount] 🚀 Index LiveView mounting")
     current_user_id = get_user_id_from_session(session)
 
@@ -19,11 +19,25 @@ defmodule TodoWeb.TodoLive.Index do
         IO.puts("[Mount] 🔄 Static render phase (JS not yet connected)")
       end
 
+      # Get priority filter from params, only accept valid values
+      priority_filter = 
+        if params["priority"] in TodoItem.priorities() do
+          params["priority"]
+        else
+          nil
+        end
+      IO.puts("[Mount] 🔍 Priority filter: #{inspect(priority_filter)}")
+      
       IO.puts("[Mount] 📥 Loading initial todos from database")
-      todos = Tasks.list_todos(current_user_id)
+      todos = Tasks.list_todos(current_user_id, priority_filter)
       IO.puts("        ✅ Found #{length(todos)} todos, initializing LiveView state")
 
-      {:ok, assign(socket, todos: todos, current_user_id: current_user_id)}
+      {:ok, assign(socket, 
+        todos: todos, 
+        current_user_id: current_user_id,
+        priority_filter: priority_filter,
+        priorities: TodoItem.priorities()
+      )}
     else
       IO.puts("[Mount] 🚫 User not authenticated, redirecting to login")
       {:ok, redirect(socket, to: ~p"/users/log_in")}
@@ -105,6 +119,22 @@ defmodule TodoWeb.TodoLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    # Get priority filter from params, only accept valid values
+    priority_filter = 
+      if params["priority"] in TodoItem.priorities() do
+        params["priority"]
+      else
+        nil
+      end
+    
+    # Reload todos with filter if priority param changed
+    socket = if Map.get(socket.assigns, :priority_filter) != priority_filter do
+      todos = Tasks.list_todos(socket.assigns.current_user_id, priority_filter)
+      assign(socket, todos: todos, priority_filter: priority_filter)
+    else
+      socket
+    end
+    
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
@@ -195,5 +225,25 @@ defmodule TodoWeb.TodoLive.Index do
     with %{"user_token" => user_token} <- session,
          user = Todo.Accounts.get_user_by_session_token(user_token),
          do: user.id
+  end
+  
+  # Helper function to get the color classes for a priority badge
+  defp get_priority_colors(priority) do
+    case priority do
+      "high" -> "bg-red-100 text-red-800"
+      "normal" -> "bg-blue-100 text-blue-800"
+      "low" -> "bg-gray-100 text-gray-800"
+      _ -> "bg-gray-100 text-gray-800"
+    end
+  end
+  
+  # Helper function to get the ring color for the selected priority filter
+  defp priority_ring_color(priority) do
+    case priority do
+      "high" -> "ring-red-500"
+      "normal" -> "ring-blue-500"
+      "low" -> "ring-gray-500"
+      _ -> "ring-gray-500"
+    end
   end
 end
