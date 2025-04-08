@@ -47,7 +47,8 @@ defmodule TodoWeb.TodoLive.New do
           description: todo.description,
           due_date: todo.due_date,
           completed: todo.completed,
-          created_at: todo.created_at
+          created_at: todo.created_at,
+          priority: todo.priority
         }
 
         # Broadcast just the creation event with minimal data
