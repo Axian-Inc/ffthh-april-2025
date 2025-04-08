@@ -71,6 +71,11 @@ defmodule TodoWeb.TodoLive.Edit do
           if original.completed_at != updated_todo.completed_at,
             do: Map.put(delta, :completed_at, updated_todo.completed_at),
             else: delta
+            
+        delta =
+          if original.priority != updated_todo.priority,
+            do: Map.put(delta, :priority, updated_todo.priority),
+            else: delta
 
         # Broadcast only the delta of changed fields
         Phoenix.PubSub.broadcast(

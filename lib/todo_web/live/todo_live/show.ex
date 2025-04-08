@@ -41,10 +41,11 @@ defmodule TodoWeb.TodoLive.Show do
     # [8] Log the received broadcast in Show LiveView
     IO.puts("\n[8] 📻 Show LiveView received broadcast: {:todo_completion_toggled}")
     IO.puts("    📦 Delta: %{id: #{delta.id}, completed: #{delta.completed}}")
-    
+
     # Update only the completion status if we're viewing this todo
     if socket.assigns.todo_item && socket.assigns.todo_item.id == delta.id do
       IO.puts("[9] 🧩 Applying changes to Show LiveView state")
+
       updated_todo = %{
         socket.assigns.todo_item
         | completed: delta.completed,
@@ -92,6 +93,7 @@ defmodule TodoWeb.TodoLive.Show do
     IO.puts("[Params] 📖 Loaded todo: '#{todo_item.title}', completed: #{todo_item.completed}")
 
     IO.puts("[Params] 🔄 Setting Show view state and triggering render")
+
     {:noreply,
      socket
      |> assign(:page_title, todo_item.title)
@@ -102,10 +104,12 @@ defmodule TodoWeb.TodoLive.Show do
   def handle_event("toggle_completed", %{"id" => id}, socket) do
     # [1S] Log when the event is received in Show view
     IO.puts("\n[1S] 📩 Event received in SHOW VIEW: toggle_completed for todo ##{id}")
-    
+
     todo_item = Tasks.get_todo_item!(socket.assigns.current_user_id, id)
     # [2S] Log the current state
-    IO.puts("[2S] 🔄 Toggling todo: '#{todo_item.title}' from #{todo_item.completed} to #{!todo_item.completed}")
+    IO.puts(
+      "[2S] 🔄 Toggling todo: '#{todo_item.title}' from #{todo_item.completed} to #{!todo_item.completed}"
+    )
 
     # Toggle the completed status
     new_status = !todo_item.completed
@@ -128,11 +132,13 @@ defmodule TodoWeb.TodoLive.Show do
 
     # [4S] Log the broadcast
     IO.puts("[4S] 📡 Broadcasting from SHOW VIEW to todos:#{socket.assigns.current_user_id}")
+
     Phoenix.PubSub.broadcast(
       Todo.PubSub,
       "todos:#{socket.assigns.current_user_id}",
       {:todo_completion_toggled, delta}
     )
+
     IO.puts("    📣 Message sent: {:todo_completion_toggled, delta}")
 
     # [5S] Log the local state update

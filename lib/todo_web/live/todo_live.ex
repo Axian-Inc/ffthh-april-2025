@@ -141,7 +141,7 @@ defmodule TodoWeb.TodoLive do
   # HELPER FUNCTIONS
   # Common utilities used across all todo LiveView contexts
   # ========================================================================
-  
+
   # Extract the user ID from the session token
   defp get_user_id_from_session(session) do
     with %{"user_token" => user_token} <- session,

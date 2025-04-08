@@ -8,6 +8,12 @@
     <.input field={@changeset[:title]} type="text" label="Title" required />
     <.input field={@changeset[:description]} type="textarea" label="Description" />
     <.input field={@changeset[:due_date]} type="date" label="Due date" />
+    <.input 
+      field={@changeset[:priority]} 
+      type="select" 
+      label="Priority" 
+      options={[{"Low", "low"}, {"Normal", "normal"}, {"High", "high"}]} 
+    />
     <.input field={@changeset[:completed]} type="checkbox" label="Completed" />
     <:actions>
       <.button phx-disable-with="Saving...">Save Todo</.button>

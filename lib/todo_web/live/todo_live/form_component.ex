@@ -21,6 +21,12 @@ defmodule TodoWeb.TodoLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" required />
         <.input field={@form[:description]} type="textarea" label="Description" />
         <.input field={@form[:due_date]} type="date" label="Due date" />
+        <.input
+          field={@form[:priority]}
+          type="select"
+          label="Priority"
+          options={[{"Low", "low"}, {"Normal", "normal"}, {"High", "high"}]}
+        />
         <.input field={@form[:completed]} type="checkbox" label="Completed" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Todo</.button>
